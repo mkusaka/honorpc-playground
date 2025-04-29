@@ -10,7 +10,6 @@ export const app = new Hono()
     zValidator("query", z.object({ id: z.string() })),
     (c) => {
       const { id } = c.req.valid("query");
-      throw new Error("test");
       if (id !== "1") {
         return c.json({ error: "not found" }, 404);
       }
