@@ -21,6 +21,36 @@ async function main() {
     };
     console.log("Success:", post);
   }
+
+  // Zod validation error tests
+  console.log("\nTesting Zod validation errors:");
+
+  // Invalid age (string instead of number)
+  const invalidAgeRes = await client.validate.$get({ 
+    query: { age: "17", email: "test@example.com" } 
+  });
+  console.log("Invalid age response:", await invalidAgeRes.json());
+
+  // Invalid email format
+  const invalidEmailRes = await client.validate.$get({ 
+    query: { age: "20", email: "invalid-email" } 
+  });
+  console.log("Invalid email response:", await invalidEmailRes.json());
+
+  // Age out of range
+  const ageOutOfRangeRes = await client.validate.$get({ 
+    query: { age: "101", email: "test@example.com" } 
+  });
+  console.log("Age out of range response:", await ageOutOfRangeRes.json());
+
+  // Valid request
+  const validRes = await client.validate.$get({ 
+    query: { age: "25", email: "valid@example.com" } 
+  });
+  if (validRes.ok) {
+    const data = await validRes.json();
+    console.log("Valid request response:", data);
+  }
 }
 
 main().catch(console.error);
