@@ -4,8 +4,8 @@ import { serve } from "@hono/node-server";
 import { describeRoute, openAPISpecs } from "hono-openapi";
 import { resolver, validator as zValidator } from "hono-openapi/zod";
 import { logger } from "hono/logger";
+import { z, createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import "zod-openapi/extend";
-import { z } from "zod";
 
 // ── schema definition ────────────────────────────────────────────
 
@@ -31,6 +31,52 @@ const ValidateQuerySchema = z.object({
   age: z.number().min(18).max(100),
   email: z.string().email(),
 });
+
+// -- route definition ────────────────────────────────────────────
+
+const postsRoutes = createRoute({
+  method: "get",
+  path: "/posts",
+  request: {
+    query: PostsQuerySchema,
+  },
+  middleware: [zValidator("query", PostsQuerySchema)],
+  responses: {
+    200: {
+      description: "Post found",
+      content: {
+        "application/json": {
+          schema: PostResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: "Not Found",
+      content: {
+        "application/json": { schema: ErrorResponseSchema },
+      },
+    },
+    500: {
+      description: "Server Error",
+      content: {
+        "application/json": { schema: ErrorResponseSchema },
+      },
+    },
+  },
+});
+
+export const app2 = new OpenAPIHono()
+  .openapi(postsRoutes, (c) => {
+    const { id } = c.req.valid("query");
+    if (id !== "1") {
+      return c.json({ error: "not found" }, 404);
+    }
+    return c.json({ post: { id, title: "Hello World" } }, 200);
+  });
+
+app2.use("*", logger());
+
+export type AppType2 = typeof app2;
 
 // ── app initialization & route registration (chain式)──────────────────────
 

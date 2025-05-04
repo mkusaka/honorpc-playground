@@ -45,8 +45,9 @@ async function main() {
   const validRes = await client.validate.$get({
     query: { age: "25", email: "valid@example.com" },
   });
-  if (validRes.ok)
+  if (validRes.ok) {
     console.log("Valid request response:", await validRes.json());
+  }
 }
 
 main().catch(console.error);
