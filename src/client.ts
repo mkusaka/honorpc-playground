@@ -1,16 +1,18 @@
+// src/client.ts
 import type { AppType } from "./server";
 import { hc } from "hono/client";
 
 async function main() {
   const client = hc<AppType>("http://localhost:8787");
 
-  // 存在しないID→404
+  // 存在しないID → 404
   const res404 = await client.posts.$get({ query: { id: "2" } });
-  console.log(res404.status, res404.ok); // 404 false
+  console.log(res404.status, res404.ok);
 
   if (!res404.ok) {
-    const err = (await res404.json()) as { error: string };
-    console.error("Error:", err.error);
+    // --- err を必ずキャストして unknown を回避 ---
+    const errBody = (await res404.json()) as { error: string };
+    console.error("Error:", errBody.error);
   }
 
   // 正常系
@@ -22,35 +24,29 @@ async function main() {
     console.log("Success:", post);
   }
 
-  // Zod validation error tests
+  // Zod validation エラーテスト
   console.log("\nTesting Zod validation errors:");
 
-  // Invalid age (string instead of number)
-  const invalidAgeRes = await client.validate.$get({ 
-    query: { age: "17", email: "test@example.com" } 
+  const invalidAge = await client.validate.$get({
+    query: { age: "17", email: "test@example.com" },
   });
-  console.log("Invalid age response:", await invalidAgeRes.json());
+  console.log("Invalid age response:", await invalidAge.json());
 
-  // Invalid email format
-  const invalidEmailRes = await client.validate.$get({ 
-    query: { age: "20", email: "invalid-email" } 
+  const invalidEmail = await client.validate.$get({
+    query: { age: "20", email: "invalid-email" },
   });
-  console.log("Invalid email response:", await invalidEmailRes.json());
+  console.log("Invalid email response:", await invalidEmail.json());
 
-  // Age out of range
-  const ageOutOfRangeRes = await client.validate.$get({ 
-    query: { age: "101", email: "test@example.com" } 
+  const ageOut = await client.validate.$get({
+    query: { age: "101", email: "test@example.com" },
   });
-  console.log("Age out of range response:", await ageOutOfRangeRes.json());
+  console.log("Age out of range:", await ageOut.json());
 
-  // Valid request
-  const validRes = await client.validate.$get({ 
-    query: { age: "25", email: "valid@example.com" } 
+  const validRes = await client.validate.$get({
+    query: { age: "25", email: "valid@example.com" },
   });
-  if (validRes.ok) {
-    const data = await validRes.json();
-    console.log("Valid request response:", data);
-  }
+  if (validRes.ok)
+    console.log("Valid request response:", await validRes.json());
 }
 
 main().catch(console.error);
