@@ -6,12 +6,13 @@ import { resolver, validator as zValidator } from "hono-openapi/zod";
 import { logger } from "hono/logger";
 import { z, createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import "zod-openapi/extend";
+import { getPost } from "./handlers/getPost";
 
 // ── schema definition ────────────────────────────────────────────
 
 const PostsQuerySchema = z
   .object({ id: z.string().openapi({ example: "1" }) })
-  .openapi({ ref: "PostsQuery" });
+  .openapi("PostsQuery" );
 
 const PostResponseSchema = z
   .object({
@@ -20,11 +21,11 @@ const PostResponseSchema = z
       title: z.string().openapi({ example: "Hello World" }),
     }),
   })
-  .openapi({ ref: "PostResponse" });
+  .openapi("PostResponse");
 
 const ErrorResponseSchema = z
   .object({ error: z.string().openapi({ example: "not found" }) })
-  .openapi({ ref: "ErrorResponse" });
+  .openapi("ErrorResponse");
 
 // validation schema for Zod (not for OpenAPI)
 const ValidateQuerySchema = z.object({
@@ -66,12 +67,13 @@ const postsRoutes = createRoute({
 });
 
 export const app2 = new OpenAPIHono()
-  .openapi(postsRoutes, (c) => {
+  .openapi(postsRoutes, async (c) => {
     const { id } = c.req.valid("query");
-    if (id !== "1") {
-      return c.json({ error: "not found" }, 404);
+    const result = await getPost(id);
+    if (!result.ok) {
+      return c.json(result.error, 404);
     }
-    return c.json({ post: { id, title: "Hello World" } }, 200);
+    return c.json(result.value, 200);
   });
 
 app2.use("*", logger());
