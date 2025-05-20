@@ -7,6 +7,7 @@ import { logger } from "hono/logger";
 import { z, createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import "zod-openapi/extend";
 import { getPost } from "./handlers/getPost";
+import { zfd } from "zod-form-data";
 
 // ── schema definition ────────────────────────────────────────────
 
@@ -179,6 +180,24 @@ export const app = new Hono()
       const { age, email } = c.req.valid("query");
       return c.json({ age, email }, 200);
     },
+  )
+
+  // ■ POST /posts (multipart/form-data)
+  .post(
+    "/posts",
+    zValidator(
+      "form",
+      zfd.formData({
+        title: zfd.text(z.string().min(1)),
+        body: zfd.text(z.string().min(1)),
+        thumbnail: zfd.file().optional(),
+      })
+    ),
+    (c) => {
+      const { title, body, thumbnail } = c.req.valid("form");
+      // ここでDB保存やファイル処理など
+      return c.json({ ok: true, message: "Created!", title, body, hasThumbnail: !!thumbnail }, 201);
+    }
   );
 
 app.get(

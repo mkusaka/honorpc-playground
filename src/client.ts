@@ -48,6 +48,28 @@ async function main() {
   if (validRes.ok) {
     console.log("Valid request response:", await validRes.json());
   }
+
+  // --- hc (honorpc) 型安全なmultipart/form-data POSTテスト ---
+  console.log("\nTesting hc (honorpc) form: multipart POST:");
+  // without file
+  const res1 = await client.posts.$post({
+    form: {
+      title: "without file title",
+      body: "without file body",
+    },
+  });
+  console.log("hc POST /posts (no file):", await res1.json());
+
+  // with file
+  const file = new File(["dummy"], "dummy.txt", { type: "text/plain" });
+  const res2 = await client.posts.$post({
+    form: {
+      title: "with file title",
+      body: "with file body",
+      thumbnail: file, 
+    },
+  });
+  console.log("hc POST /posts (with file):", await res2.json());
 }
 
 main().catch(console.error);

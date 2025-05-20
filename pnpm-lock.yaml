@@ -26,6 +26,9 @@ importers:
       zod:
         specifier: ^3.24.3
         version: 3.24.3
+      zod-form-data:
+        specifier: ^2.0.7
+        version: 2.0.7(zod@3.24.3)
       zod-openapi:
         specifier: ^4.2.4
         version: 4.2.4(zod@3.24.3)
@@ -246,6 +249,9 @@ packages:
   '@jsdevtools/ono@7.1.3':
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
 
+  '@rvf/set-get@7.0.1':
+    resolution: {integrity: sha512-GkTSn9K1GrTYoTUqlUs36k6nJnzjQaFBTTEIqUYmzBcsGsoJM8xG7EAx2WLHWAA4QzFjcwWUSHQ3vM3Fbw50Tg==}
+
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
 
@@ -411,6 +417,11 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
 
+  zod-form-data@2.0.7:
+    resolution: {integrity: sha512-O27uzKMx7qc7z51KXER326Fp966jqHGvZX3i18CbvElF/QqVsQQN6Q7BnzepkzeBzTJnU3golibVSagf4dp7RQ==}
+    peerDependencies:
+      zod: '>= 3.11.0'
+
   zod-openapi@4.2.4:
     resolution: {integrity: sha512-tsrQpbpqFCXqVXUzi3TPwFhuMtLN3oNZobOtYnK6/5VkXsNdnIgyNr4r8no4wmYluaxzN3F7iS+8xCW8BmMQ8g==}
     engines: {node: '>=18'}
@@ -544,6 +555,8 @@ snapshots:
 
   '@jsdevtools/ono@7.1.3': {}
 
+  '@rvf/set-get@7.0.1': {}
+
   '@tsconfig/node10@1.0.11': {}
 
   '@tsconfig/node12@1.0.11': {}
@@ -674,6 +687,11 @@ snapshots:
   yaml@2.7.1: {}
 
   yn@3.1.1: {}
+
+  zod-form-data@2.0.7(zod@3.24.3):
+    dependencies:
+      '@rvf/set-get': 7.0.1
+      zod: 3.24.3
 
   zod-openapi@4.2.4(zod@3.24.3):
     dependencies:
